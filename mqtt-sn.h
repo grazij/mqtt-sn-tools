@@ -82,7 +82,6 @@
 #define MQTT_SN_TOPIC_TYPE_PREDEFINED (0x01)
 #define MQTT_SN_TOPIC_TYPE_SHORT      (0x02)
 
-
 #define MQTT_SN_FLAG_DUP      (0x1 << 7)
 #define MQTT_SN_FLAG_QOS_0    (0x0 << 5)
 #define MQTT_SN_FLAG_QOS_1    (0x1 << 5)
@@ -133,8 +132,7 @@ typedef struct __attribute__((packed)) {
     uint16_t topic_id;
     uint16_t message_id;
     char data[MQTT_SN_MAX_PAYLOAD_LENGTH];
-}
-publish_packet_t;
+} publish_packet_t;
 
 typedef struct __attribute__((packed)) {
     uint8_t length;
@@ -142,8 +140,7 @@ typedef struct __attribute__((packed)) {
     uint16_t topic_id;
     uint16_t message_id;
     uint8_t return_code;
-}
-puback_packet_t;
+} puback_packet_t;
 
 typedef struct __attribute__((packed)) {
     uint8_t length;
@@ -154,8 +151,7 @@ typedef struct __attribute__((packed)) {
         char topic_name[MQTT_SN_MAX_TOPIC_LENGTH];
         uint16_t topic_id;
     };
-}
-subscribe_packet_t;
+} subscribe_packet_t;
 
 typedef struct __attribute__((packed)) {
     uint8_t length;
@@ -164,8 +160,7 @@ typedef struct __attribute__((packed)) {
     uint16_t topic_id;
     uint16_t message_id;
     uint8_t return_code;
-}
-suback_packet_t;
+} suback_packet_t;
 
 typedef struct {
     uint8_t length;
@@ -179,15 +174,13 @@ typedef struct __attribute__((packed)) {
     uint8_t ctrl;
     uint8_t wireless_node_id[MQTT_SN_MAX_WIRELESS_NODE_ID_LENGTH];
     char data[MQTT_SN_MAX_PACKET_LENGTH];
-}
-frwdencap_packet_t;
+} frwdencap_packet_t;
 
 typedef struct topic_map {
     uint16_t topic_id;
     char topic_name[MQTT_SN_MAX_TOPIC_LENGTH];
     struct topic_map *next;
 } topic_map_t;
-
 
 // Library functions
 int mqtt_sn_create_socket(const char* host, const char* port, uint16_t source_port);

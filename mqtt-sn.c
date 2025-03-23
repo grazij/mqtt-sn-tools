@@ -38,7 +38,6 @@
 
 #include "mqtt-sn.h"
 
-
 #ifndef AI_DEFAULT
 #define AI_DEFAULT (AI_ADDRCONFIG|AI_V4MAPPED)
 #endif
@@ -55,7 +54,6 @@ const uint8_t *wireless_node_id = NULL;
 uint8_t wireless_node_id_len  = 0;
 
 topic_map_t *topic_map = NULL;
-
 
 void mqtt_sn_set_debug(uint8_t value)
 {

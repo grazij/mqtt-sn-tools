@@ -41,7 +41,6 @@ uint8_t debug = 0;
 uint8_t verbose = 0;
 uint8_t keep_running = TRUE;
 
-
 static void usage()
 {
     fprintf(stderr, "Usage: mqtt-sn-dump [opts] -p <port>\n");
@@ -166,4 +165,3 @@ int main(int argc, char* argv[])
 
     return 0;
 }
-
