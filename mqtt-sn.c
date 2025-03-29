@@ -173,6 +173,12 @@ void mqtt_sn_send_packet(int sock, const void* data)
 {
     ssize_t sent = 0;
     size_t len = ((uint8_t*)data)[0];
+    int8_t offset = 0;
+
+    if (len == 0x01) {
+        len = ntohs(*((uint16_t*)&data[1]));
+        offset = 2;
+    }
 
     // If forwarder encapsulation enabled, wrap packet
     if (forwarder_encapsulation) {
@@ -181,7 +187,7 @@ void mqtt_sn_send_packet(int sock, const void* data)
 
     if (debug > 1) {
         mqtt_sn_log_debug("Sending  %2lu bytes. Type=%s on Socket: %d.", (long unsigned int)len,
-                          mqtt_sn_type_string(((uint8_t*)data)[1]), sock);
+                          mqtt_sn_type_string(((uint8_t*)data)[offset+1]), sock);
     }
 
     sent = send(sock, data, len, 0);
@@ -516,12 +522,23 @@ void mqtt_sn_send_subscribe_topic_id(int sock, uint16_t topic_id, uint8_t qos)
     mqtt_sn_send_packet(sock, &packet);
 }
 
-void mqtt_sn_send_pingreq(int sock)
+void mqtt_sn_send_pingreq(int sock, const char *client_id)
 {
-    char packet[2];
+    ping_packet_t packet;
+    memset(&packet, 0, sizeof(packet));
 
-    packet[0] = 2;
-    packet[1] = MQTT_SN_TYPE_PINGREQ;
+    packet.length = 2;
+    packet.type = MQTT_SN_TYPE_PINGREQ;
+
+    if (client_id) {
+        // Check that it isn't too long
+        if (strlen(client_id) > MQTT_SN_MAX_CLIENT_ID_LENGTH) {
+            mqtt_sn_log_err("Client id is too long");
+            exit(EXIT_FAILURE);
+        }
+        packet.length += strlen(client_id);
+        memcpy(packet.client_id, client_id, strlen(client_id));
+    }
 
     mqtt_sn_log_debug("Sending PINGREQ packet...");
 
@@ -848,7 +865,7 @@ void* mqtt_sn_wait_for(uint8_t type, int sock)
 
         // Time to send a ping?
         if (keep_alive > 0 && (now - last_transmit) >= keep_alive) {
-            mqtt_sn_send_pingreq(sock);
+            mqtt_sn_send_pingreq(sock, NULL);
         }
 
         ret = mqtt_sn_select(sock);
